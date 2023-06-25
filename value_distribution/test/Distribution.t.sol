@@ -11,6 +11,8 @@ contract DistributionTest is Test {
     Contribution public contribution;
     Score public score;
 
+    error PeriodNotFinished();
+
     function setUp() public {
         contribution = new Contribution();
         score = new Score();
@@ -18,7 +20,8 @@ contract DistributionTest is Test {
         distribution = new Distribution(
             1_000_000,
             address(contribution),
-            address(score)
+            address(score),
+            100
         );
 
         contribution.contribute(address(this), 100);
@@ -29,6 +32,11 @@ contract DistributionTest is Test {
 
     function testDistribution() public {
         assertEq(distribution.getPendingDistribution(), 0);
+        vm.warp(20);
+        
+        vm.expectRevert(PeriodNotFinished.selector);
+        distribution.distribute();
+
         vm.warp(101);
         uint256 expectedDistribution = 100 * 1_000_000;
         assertEq(distribution.getPendingDistribution(), expectedDistribution);

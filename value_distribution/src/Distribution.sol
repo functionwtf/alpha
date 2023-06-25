@@ -10,21 +10,30 @@ contract Distribution {
     uint256 public distributionRate;
     uint256 public lastDistribution;
 
+    uint256 public periodLength;
+
     Contribution contribution;
     Score score;
+
+    error PeriodNotFinished();
 
     constructor(
         uint256 _distributionRate,
         address _contributionAddress,
-        address _scoreAddress
+        address _scoreAddress,
+        uint256 _periodLength
     ) {
         distributionRate = _distributionRate;
         lastDistribution = block.timestamp;
         contribution = Contribution(_contributionAddress);
         score = Score(_scoreAddress);
+        periodLength = _periodLength;
     }
 
     function distribute() external {
+        if (block.timestamp - lastDistribution < periodLength) {
+            revert PeriodNotFinished();
+        }
         uint256 amountToDistribute = getPendingDistribution() / PRECISION;
         lastDistribution = block.timestamp;
         (address[] memory contributors, uint256[] memory shares) = contribution
@@ -35,6 +44,7 @@ contract Distribution {
         for (uint256 i = 0; i < contributorsLength; ++i) {
             score.addScore(contributors[i], amountToDistribute * shares[i]);
         }
+
         contribution.reset();
     }
 
