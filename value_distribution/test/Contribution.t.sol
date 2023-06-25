@@ -19,7 +19,8 @@ contract ContributionTest is Test {
 
         (address[] memory keys, uint256[] memory values) = contribution
             .getContributions();
-        (keys, values) = contribution.getContributions();
+
+        assertEq(keys.length, 2);
 
         for (uint256 i = 0; i < keys.length; i++) {
             if (keys[i] == address(this)) {
@@ -28,5 +29,18 @@ contract ContributionTest is Test {
                 assertEq(values[i], 100);
             }
         }
+    }
+
+    function testResetContributions() public {
+        contribution.contribute(address(this), 100);
+        contribution.contribute(address(this), 100);
+
+        contribution.reset();
+
+        (address[] memory keys, uint256[] memory values) = contribution
+            .getContributions();
+
+        assertEq(keys.length, 0);
+        assertEq(values.length, 0);
     }
 }
