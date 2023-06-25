@@ -1,8 +1,10 @@
+let provider;
+
 async function connectWallet() {
     if (window.ethereum) {
         try {
             await window.ethereum.request({ method: 'eth_requestAccounts' });
-            return new ethers.providers.Web3Provider(window.ethereum);
+            provider = new ethers.providers.Web3Provider(window.ethereum);
         } catch (error) {
             console.error("User denied account access:", error);
             alert("Unable to connect to wallet. User denied account access.");
@@ -14,7 +16,6 @@ async function connectWallet() {
 }
 
 async function createTransaction() {
-    const provider = await connectWallet();
     if (!provider) return;
 
     const signer = provider.getSigner();
@@ -48,5 +49,6 @@ async function createTransaction() {
 }
 
 window.onload = function() {
+    document.getElementById('connectWallet').addEventListener('click', connectWallet);
     document.getElementById('createTransaction').addEventListener('click', createTransaction);
 }
