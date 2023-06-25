@@ -35,6 +35,7 @@ contract Contribution {
             (address key, ) = contributions.at(i);
             contributions.remove(key);
         }
+        totalContributions = 0;
     }
 
     function getContributorsShare()
