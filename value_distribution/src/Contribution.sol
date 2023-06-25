@@ -4,6 +4,8 @@ pragma solidity ^0.8.13;
 import "openzeppelin-contracts/contracts/utils/structs/EnumerableMap.sol";
 
 contract Contribution {
+    uint256 constant PRECISION = 10_000;
+
     using EnumerableMap for EnumerableMap.AddressToUintMap;
     EnumerableMap.AddressToUintMap contributions;
     uint256 public totalContributions;
@@ -29,8 +31,7 @@ contract Contribution {
     }
 
     function reset() external {
-        uint256 length = contributions.length();
-        for (uint256 i = 0; i < length; i++) {
+        for (uint256 i = 0; i < contributions.length(); i++) {
             (address key, ) = contributions.at(i);
             contributions.remove(key);
         }
@@ -46,7 +47,7 @@ contract Contribution {
         uint256[] memory values = new uint256[](length);
         for (uint256 i = 0; i < length; i++) {
             (contributors[i], values[i]) = contributions.at(i);
-            values[i] = (values[i] * 10_000) / totalContributions;
+            values[i] = (values[i] * PRECISION) / totalContributions;
         }
         return (contributors, values);
     }
