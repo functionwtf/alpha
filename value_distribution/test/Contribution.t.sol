@@ -15,18 +15,31 @@ contract ContributionTest is Test {
         contribution.contribute(address(this), 100);
         contribution.contribute(address(this), 100);
 
-        contribution.contribute(address(0x1), 100);
+        contribution.contribute(address(0x1), 1);
 
         (address[] memory keys, uint256[] memory values) = contribution
             .getContributions();
 
         assertEq(keys.length, 2);
 
+        // test that the contributions are correct
         for (uint256 i = 0; i < keys.length; i++) {
             if (keys[i] == address(this)) {
                 assertEq(values[i], 200);
             } else if (keys[i] == address(0x1)) {
-                assertEq(values[i], 100);
+                assertEq(values[i], 1);
+            }
+        }
+
+        (address[] memory contributors, uint256[] memory shares) = contribution
+            .getContributorsShare();
+
+        // test that the shares are correct
+        for (uint256 i = 0; i < contributors.length; i++) {
+            if (contributors[i] == address(this)) {
+                assertEq(shares[i], 9950);
+            } else if (contributors[i] == address(0x1)) {
+                assertEq(shares[i], 49);
             }
         }
     }

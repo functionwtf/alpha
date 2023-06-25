@@ -35,4 +35,19 @@ contract Contribution {
             contributions.remove(key);
         }
     }
+
+    function getContributorsShare()
+        public
+        view
+        returns (address[] memory, uint256[] memory)
+    {
+        uint256 length = contributions.length();
+        address[] memory keys = new address[](length);
+        uint256[] memory values = new uint256[](length);
+        for (uint256 i = 0; i < length; i++) {
+            (keys[i], values[i]) = contributions.at(i);
+            values[i] = (values[i] * 10_000) / totalContributions;
+        }
+        return (keys, values);
+    }
 }
